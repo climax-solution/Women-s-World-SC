@@ -1,0 +1,12 @@
+{
+  "name": "Women's-world",
+  "version": "1.0.0",
+  "description": "Womens world NFT smart contract - ERC721",
+  "main": "index.js",
+  "author": "blocklimax",
+  "license": "MIT",
+  "devDependencies": {
+    "erc721a": "^4.2.3",
+    "hardhat": "^2.11.2"
+  }
+}
