@@ -57,9 +57,10 @@ contract WomansWorld is ERC721A, Ownable, ReentrancyGuard {
             require(balanceOf(msg.sender) <= 5, "Exiceed maximum balance limit" );
 
             uint256 whited = whiteMintedNumber[msg.sender];
+            uint256 minted = mintedNumber[msg.sender];
+
             if (!isPublic) {
 
-                uint256 minted = mintedNumber[msg.sender];
                 
                 require(quality <= whiteMintCount, "Exceed maximum mint count");
                 require(whitelisted, "Sender is not in whitelist");
@@ -69,14 +70,17 @@ contract WomansWorld is ERC721A, Ownable, ReentrancyGuard {
                     payFee = whitePrice * (quality - (2 - whited));
                 }
     
-                whiteMintedNumber[msg.sender] = (minted + quality) >= 2 ? 2 : ++ whited;
+                if (whited < 2) whiteMintedNumber[msg.sender] = (minted + quality) >= 2 ? 2 : ++ whited;
             } else {
                 
                 require(quality <= publicMintCount, "Exceed maximum mint count");
                 
                 if (whitelisted) {
-                    payFee = blackPrice * (quality - (3 - whited));
-                    if (whited < 3) whiteMintedNumber[msg.sender] += (whited + quality) >= 3 ? 3 : ++ whited;
+                    if (minted + quality > 3) {
+                        payFee = blackPrice * (quality - (3 - whited));
+                    }
+
+                    if (whited < 3) whiteMintedNumber[msg.sender] = (minted + quality) >= 3 ? 3 : (whited + quality);
                 }
                 else {
                     if (whited == 0) whiteMintedNumber[msg.sender] ++;
@@ -158,8 +162,8 @@ contract WomansWorld is ERC721A, Ownable, ReentrancyGuard {
         excludedAccount[account] = status;
     }
 
-    function goToPublic() external onlyOwner {
-        isPublic = true;
+    function goToPublic(bool status) external onlyOwner {
+        isPublic = status;
     }
 
     function updateWhitePrice(uint256 newPrice) external onlyOwner {
